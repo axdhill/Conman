@@ -22,12 +22,12 @@ public:
 
 private:
     void timerCallback() override;
+    bool isStandalone() const;
 
     bool isDraggingOver = false;
 
     ConvolutionPluginProcessor& processorRef;
 
-#if ! JucePlugin_Build_Standalone
     // Plugin mode: real-time convolution controls
     juce::TextButton loadImprintButton { "Load Imprint" };
     juce::Label imprintFileLabel;
@@ -38,9 +38,7 @@ private:
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> dryWetAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
-#endif
 
-#if JucePlugin_Build_Standalone
     // Standalone mode: offline convolution controls
     juce::TextButton loadSampleAButton { "Load Sample A" };
     juce::TextButton loadSampleBButton { "Load Sample B" };
@@ -51,7 +49,6 @@ private:
 
     juce::File sampleAFile, sampleBFile;
     OfflineConvolver offlineConvolver;
-#endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ConvolutionPluginEditor)
 };
