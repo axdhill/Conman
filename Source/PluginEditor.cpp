@@ -13,7 +13,7 @@ ConvolutionPluginEditor::ConvolutionPluginEditor(ConvolutionPluginProcessor& p)
         loadImprintButton.onClick = [this]
         {
             auto chooser = std::make_shared<juce::FileChooser>(
-                "Select Imprint", juce::File{}, "*.wav;*.aif;*.aiff;*.flac", false);
+                "Select Imprint", juce::File{}, "*.wav;*.aif;*.aiff;*.flac");
 
             chooser->launchAsync(juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
                 [this, chooser](const juce::FileChooser& fc)
@@ -58,7 +58,7 @@ ConvolutionPluginEditor::ConvolutionPluginEditor(ConvolutionPluginProcessor& p)
         loadSampleAButton.onClick = [this]
         {
             auto chooser = std::make_shared<juce::FileChooser>(
-                "Select Sample A", juce::File{}, "*.wav;*.aif;*.aiff;*.flac", false);
+                "Select Sample A", juce::File{}, "*.wav;*.aif;*.aiff;*.flac");
 
             chooser->launchAsync(juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
                 [this, chooser](const juce::FileChooser& fc)
@@ -80,7 +80,7 @@ ConvolutionPluginEditor::ConvolutionPluginEditor(ConvolutionPluginProcessor& p)
         loadSampleBButton.onClick = [this]
         {
             auto chooser = std::make_shared<juce::FileChooser>(
-                "Select Sample B", juce::File{}, "*.wav;*.aif;*.aiff;*.flac", false);
+                "Select Sample B", juce::File{}, "*.wav;*.aif;*.aiff;*.flac");
 
             chooser->launchAsync(juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
                 [this, chooser](const juce::FileChooser& fc)
@@ -114,7 +114,7 @@ ConvolutionPluginEditor::ConvolutionPluginEditor(ConvolutionPluginProcessor& p)
             }
 
             auto chooser = std::make_shared<juce::FileChooser>(
-                "Save Convolved Output", juce::File{}, "*.wav", false);
+                "Save Convolved Output", juce::File{}, "*.wav");
 
             chooser->launchAsync(juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles,
                 [this, chooser](const juce::FileChooser& fc)

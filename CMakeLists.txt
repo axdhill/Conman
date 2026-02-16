@@ -16,7 +16,7 @@ juce_add_plugin(Conman
     COMPANY_NAME "protist"
     PLUGIN_MANUFACTURER_CODE Cvpl
     PLUGIN_CODE Cvpg
-    FORMATS AUv3 VST3 Standalone
+    FORMATS AU AUv3 VST3 Standalone
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
