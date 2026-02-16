@@ -69,8 +69,7 @@ void ConvolutionPluginProcessor::processBlock(juce::AudioBuffer<float>& buffer, 
     auto numSamples = buffer.getNumSamples();
     auto numChannels = buffer.getNumChannels();
 
-    if (dryBuffer.getNumChannels() < numChannels || dryBuffer.getNumSamples() < numSamples)
-        dryBuffer.setSize(numChannels, numSamples, false, false, true);
+    jassert(dryBuffer.getNumChannels() >= numChannels && dryBuffer.getNumSamples() >= numSamples);
 
     for (int ch = 0; ch < numChannels; ++ch)
         dryBuffer.copyFrom(ch, 0, buffer, ch, 0, numSamples);

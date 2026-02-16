@@ -14,11 +14,22 @@ public:
 
     enum class Status { Idle, Processing, Done, Error };
     Status getStatus() const { return status.load(); }
-    juce::String getStatusMessage() const { return statusMessage; }
+    juce::String getStatusMessage() const
+    {
+        const juce::ScopedLock sl(messageLock);
+        return statusMessage;
+    }
 
 private:
+    void setStatusMessage(const juce::String& msg)
+    {
+        const juce::ScopedLock sl(messageLock);
+        statusMessage = msg;
+    }
+
     juce::File fileA, fileB, outputFile;
     std::atomic<Status> status { Status::Idle };
+    juce::CriticalSection messageLock;
     juce::String statusMessage;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OfflineConvolver)
