@@ -5,13 +5,14 @@ ConvolutionPluginEditor::ConvolutionPluginEditor(ConvolutionPluginProcessor& p)
 {
     setOpaque(true);
 
-    // --- Real-time mode ---
+#if ! JucePlugin_Build_Standalone
+    // --- Plugin mode: real-time convolution ---
 
-    addAndMakeVisible(loadIRButton);
-    loadIRButton.onClick = [this]
+    addAndMakeVisible(loadImprintButton);
+    loadImprintButton.onClick = [this]
     {
         auto chooser = std::make_shared<juce::FileChooser>(
-            "Select Impulse Response", juce::File{}, "*.wav;*.aif;*.aiff;*.flac", false);
+            "Select Imprint", juce::File{}, "*.wav;*.aif;*.aiff;*.flac", false);
 
         chooser->launchAsync(juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
             [this, chooser](const juce::FileChooser& fc)
@@ -20,15 +21,15 @@ ConvolutionPluginEditor::ConvolutionPluginEditor(ConvolutionPluginProcessor& p)
                 if (file.existsAsFile())
                 {
                     processorRef.loadImpulseResponse(file);
-                    irFileLabel.setText(file.getFileName(), juce::dontSendNotification);
+                    imprintFileLabel.setText(file.getFileName(), juce::dontSendNotification);
                 }
             });
     };
 
-    addAndMakeVisible(irFileLabel);
-    irFileLabel.setJustificationType(juce::Justification::centredLeft);
-    auto irName = processorRef.getIRFileName();
-    irFileLabel.setText(irName.isNotEmpty() ? irName : "No IR loaded", juce::dontSendNotification);
+    addAndMakeVisible(imprintFileLabel);
+    imprintFileLabel.setJustificationType(juce::Justification::centredLeft);
+    auto imprintName = processorRef.getIRFileName();
+    imprintFileLabel.setText(imprintName.isNotEmpty() ? imprintName : "No imprint loaded", juce::dontSendNotification);
 
     addAndMakeVisible(dryWetSlider);
     dryWetSlider.setSliderStyle(juce::Slider::LinearHorizontal);
@@ -46,7 +47,11 @@ ConvolutionPluginEditor::ConvolutionPluginEditor(ConvolutionPluginProcessor& p)
 
     addAndMakeVisible(gainLabel);
 
-    // --- Offline mode ---
+    setSize(500, 200);
+#endif
+
+#if JucePlugin_Build_Standalone
+    // --- Standalone mode: offline convolution ---
 
     addAndMakeVisible(loadSampleAButton);
     loadSampleAButton.onClick = [this]
@@ -128,20 +133,24 @@ ConvolutionPluginEditor::ConvolutionPluginEditor(ConvolutionPluginProcessor& p)
     offlineStatusLabel.setJustificationType(juce::Justification::centredLeft);
     offlineStatusLabel.setText("Idle", juce::dontSendNotification);
 
-    setSize(500, 420);
+    setSize(500, 240);
+#endif
 }
 
 ConvolutionPluginEditor::~ConvolutionPluginEditor()
 {
     stopTimer();
+#if ! JucePlugin_Build_Standalone
     dryWetAttachment.reset();
     gainAttachment.reset();
+#endif
 }
 
 void ConvolutionPluginEditor::paint(juce::Graphics& g)
 {
     g.fillAll(juce::Colour(0xff2a2a2a));
 
+#if ! JucePlugin_Build_Standalone
     if (isDraggingOver)
     {
         g.setColour(juce::Colour(0x30ffffff));
@@ -149,98 +158,99 @@ void ConvolutionPluginEditor::paint(juce::Graphics& g)
         g.setColour(juce::Colours::white);
         g.drawRect(getLocalBounds(), 2);
         g.setFont(20.0f);
-        g.drawText("Drop audio file to load as IR", getLocalBounds().removeFromTop(200),
-                    juce::Justification::centred);
+        g.drawText("Drop audio file to load as imprint",
+                    getLocalBounds(), juce::Justification::centred);
     }
-
-    g.setColour(juce::Colour(0xff444444));
-    g.drawLine(0.0f, 200.0f, static_cast<float>(getWidth()), 200.0f, 2.0f);
-
-    g.setColour(juce::Colours::white);
-    g.setFont(16.0f);
-    g.drawText("Real-time Convolution", 20, 10, 300, 25, juce::Justification::centredLeft);
-    g.drawText("Offline Convolution", 20, 210, 300, 25, juce::Justification::centredLeft);
+#endif
 }
 
 void ConvolutionPluginEditor::resized()
 {
     auto area = getLocalBounds().reduced(20);
 
-    // Real-time section
-    auto rtArea = area.removeFromTop(170);
-    rtArea.removeFromTop(30); // title space
-
-    auto irRow = rtArea.removeFromTop(30);
-    loadIRButton.setBounds(irRow.removeFromLeft(100));
+#if ! JucePlugin_Build_Standalone
+    // Plugin mode layout
+    auto irRow = area.removeFromTop(30);
+    loadImprintButton.setBounds(irRow.removeFromLeft(120));
     irRow.removeFromLeft(10);
-    irFileLabel.setBounds(irRow);
+    imprintFileLabel.setBounds(irRow);
 
-    rtArea.removeFromTop(10);
+    area.removeFromTop(10);
 
-    auto dwRow = rtArea.removeFromTop(30);
+    auto dwRow = area.removeFromTop(30);
     dryWetLabel.setBounds(dwRow.removeFromLeft(80));
     dryWetSlider.setBounds(dwRow);
 
-    rtArea.removeFromTop(10);
+    area.removeFromTop(10);
 
-    auto gainRow = rtArea.removeFromTop(30);
+    auto gainRow = area.removeFromTop(30);
     gainLabel.setBounds(gainRow.removeFromLeft(80));
     gainSlider.setBounds(gainRow);
+#endif
 
-    // Offline section
-    area.removeFromTop(20); // separator space
-    auto olArea = area;
-    olArea.removeFromTop(30); // title space
-
-    auto saRow = olArea.removeFromTop(30);
+#if JucePlugin_Build_Standalone
+    // Standalone mode layout
+    auto saRow = area.removeFromTop(30);
     loadSampleAButton.setBounds(saRow.removeFromLeft(130));
     saRow.removeFromLeft(10);
     sampleALabel.setBounds(saRow);
 
-    olArea.removeFromTop(10);
+    area.removeFromTop(10);
 
-    auto sbRow = olArea.removeFromTop(30);
+    auto sbRow = area.removeFromTop(30);
     loadSampleBButton.setBounds(sbRow.removeFromLeft(130));
     sbRow.removeFromLeft(10);
     sampleBLabel.setBounds(sbRow);
 
-    olArea.removeFromTop(10);
+    area.removeFromTop(10);
 
-    auto convRow = olArea.removeFromTop(30);
+    auto convRow = area.removeFromTop(30);
     convolveButton.setBounds(convRow.removeFromLeft(150));
 
-    olArea.removeFromTop(10);
-    offlineStatusLabel.setBounds(olArea.removeFromTop(25));
+    area.removeFromTop(10);
+    offlineStatusLabel.setBounds(area.removeFromTop(25));
+#endif
 }
 
 bool ConvolutionPluginEditor::isInterestedInFileDrag(const juce::StringArray& files)
 {
+#if ! JucePlugin_Build_Standalone
     for (auto& path : files)
     {
         auto ext = juce::File(path).getFileExtension().toLowerCase();
         if (ext == ".wav" || ext == ".aif" || ext == ".aiff" || ext == ".flac")
             return true;
     }
+#else
+    juce::ignoreUnused(files);
+#endif
     return false;
 }
 
 void ConvolutionPluginEditor::fileDragEnter(const juce::StringArray& files, int, int)
 {
+#if ! JucePlugin_Build_Standalone
     if (isInterestedInFileDrag(files))
     {
         isDraggingOver = true;
         repaint();
     }
+#else
+    juce::ignoreUnused(files);
+#endif
 }
 
 void ConvolutionPluginEditor::fileDragExit(const juce::StringArray&)
 {
+#if ! JucePlugin_Build_Standalone
     isDraggingOver = false;
     repaint();
+#endif
 }
 
 void ConvolutionPluginEditor::filesDropped(const juce::StringArray& files, int, int)
 {
+#if ! JucePlugin_Build_Standalone
     isDraggingOver = false;
     repaint();
 
@@ -251,17 +261,22 @@ void ConvolutionPluginEditor::filesDropped(const juce::StringArray& files, int, 
         if (file.existsAsFile() && (ext == ".wav" || ext == ".aif" || ext == ".aiff" || ext == ".flac"))
         {
             processorRef.loadImpulseResponse(file);
-            irFileLabel.setText(file.getFileName(), juce::dontSendNotification);
+            imprintFileLabel.setText(file.getFileName(), juce::dontSendNotification);
             break;
         }
     }
+#else
+    juce::ignoreUnused(files);
+#endif
 }
 
 void ConvolutionPluginEditor::timerCallback()
 {
+#if JucePlugin_Build_Standalone
     auto status = offlineConvolver.getStatus();
     offlineStatusLabel.setText(offlineConvolver.getStatusMessage(), juce::dontSendNotification);
 
     if (status == OfflineConvolver::Status::Done || status == OfflineConvolver::Status::Error)
         stopTimer();
+#endif
 }

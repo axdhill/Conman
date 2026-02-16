@@ -27,9 +27,10 @@ private:
 
     ConvolutionPluginProcessor& processorRef;
 
-    // Real-time mode controls
-    juce::TextButton loadIRButton { "Load IR" };
-    juce::Label irFileLabel;
+#if ! JucePlugin_Build_Standalone
+    // Plugin mode: real-time convolution controls
+    juce::TextButton loadImprintButton { "Load Imprint" };
+    juce::Label imprintFileLabel;
     juce::Slider dryWetSlider;
     juce::Slider gainSlider;
     juce::Label dryWetLabel { {}, "Dry/Wet" };
@@ -37,8 +38,10 @@ private:
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> dryWetAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
+#endif
 
-    // Offline mode controls
+#if JucePlugin_Build_Standalone
+    // Standalone mode: offline convolution controls
     juce::TextButton loadSampleAButton { "Load Sample A" };
     juce::TextButton loadSampleBButton { "Load Sample B" };
     juce::TextButton convolveButton { "Convolve & Export" };
@@ -48,6 +51,7 @@ private:
 
     juce::File sampleAFile, sampleBFile;
     OfflineConvolver offlineConvolver;
+#endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ConvolutionPluginEditor)
 };

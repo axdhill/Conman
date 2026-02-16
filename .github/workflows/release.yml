@@ -22,10 +22,15 @@ jobs:
           cd build/Conman_artefacts/Release
           zip -r ../../../Conman-AUv3-macOS.zip AUv3/
 
+      - name: Package VST3
+        run: |
+          cd build/Conman_artefacts/Release
+          zip -r ../../../Conman-VST3-macOS.zip VST3/
+
       - name: Package Standalone
         run: |
           cd build/Conman_artefacts/Release
-          zip -r ../../../Conman-Standalone-macOS.zip Standalone/
+          hdiutil create -volname "Conman" -srcfolder Standalone/Conman.app -ov -format UDZO ../../../Conman-macOS.dmg
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -33,7 +38,8 @@ jobs:
           name: macos-builds
           path: |
             Conman-AUv3-macOS.zip
-            Conman-Standalone-macOS.zip
+            Conman-VST3-macOS.zip
+            Conman-macOS.dmg
 
   release:
     needs: build-macos
@@ -51,4 +57,5 @@ jobs:
           generate_release_notes: true
           files: |
             Conman-AUv3-macOS.zip
-            Conman-Standalone-macOS.zip
+            Conman-VST3-macOS.zip
+            Conman-macOS.dmg
