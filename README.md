@@ -1,6 +1,8 @@
 # Conman
 
-A JUCE audio plugin with two convolution modes:
+A JUCE audio plugin with two convolution modes.
+
+![Conman plugin UI](screenshot.png)
 
 **Real-time mode** — Load an impulse response and convolve live audio input with it in real time (convolution reverb, cabinet simulation, etc.). Supports drag-and-drop IR loading, dry/wet mix, and output gain controls.
 
