@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(Conman VERSION 1.1.0 LANGUAGES C CXX)
+project(Conman VERSION 1.1.1 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -21,6 +21,8 @@ juce_add_plugin(Conman
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     PRODUCT_NAME "Conman"
+    ICON_BIG "${CMAKE_SOURCE_DIR}/Assets/AppIcon.icns"
+    ICON_SMALL "${CMAKE_SOURCE_DIR}/Assets/AppIcon.icns"
 )
 
 target_sources(Conman
